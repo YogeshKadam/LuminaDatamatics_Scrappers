@@ -1,0 +1,490 @@
+# -*- coding: utf-8 -*-
+import scrapy
+import urllib
+from pymongo import MongoClient
+import os
+import time
+import re
+import json
+from scrapy.conf import settings
+class AmazonItem(scrapy.Item):
+    url = scrapy.Field()
+    category = scrapy.Field()
+    id = scrapy.Field()
+    product_count = scrapy.Field()
+    breadcrumb  = scrapy.Field()
+
+class amazonSpider(scrapy.Spider):
+    imgcount = 1
+    name = "amz_category_product_count_30-08-2018_allinone"
+    allowed_domains = []
+
+    start_urls = ["http://www.flipkart.com/search?q=9780005996218"]  
+
+    def parse(self,response):
+        urls_done = [
+]
+
+        urls=[
+["1","hhhh","https://www.amazon.com/pet-shops-dogs-cats-hamsters-kittens/b?ie=UTF8&node=2619533011"],
+["2","hhhh","https://www.amazon.com/Handmade/b?ie=UTF8&node=11260432011"],
+["3","hhhh","https://www.amazon.com/stores/node/2591904011?_encoding=UTF8&ref_=s9_acss_bw_cg_fksaug_1a1_w"],
+["4","hhhh","https://www.amazon.com/Event-Party-Supplies/b?ie=UTF8&node=901590"],
+["5","hhhh","https://www.amazon.com/kids-home-store/b?ie=UTF8&node=3206325011"],
+["6","hhhh","https://www.amazon.com/Heating-Cooling-Air-Quality/b?ie=UTF8&node=3206324011"],
+["7","hhhh","https://www.amazon.com/vacuums-floor-care/b?ie=UTF8&node=510106"],
+["8","hhhh","https://www.amazon.com/storage-organization/b?ie=UTF8&node=3610841"],
+["9","hhhh","https://www.amazon.com/stores/node/9622475011?_encoding=UTF8&ref_=s9_acss_bw_cg_SBRKit_21b1_w"],
+["10","hhhh","https://www.amazon.com/faucets-Kitchen-Sink/s?ie=UTF8&page=1&rh=n%3A3754311%2Ck%3Afaucets"],
+["11","hhhh","https://www.amazon.com/Pressure-Washers/b?ie=UTF8&node=552856"],
+["12","hhhh","https://www.amazon.com/Island-Lights/b?ie=UTF8&node=5486418011"],
+["13","hhhh","https://www.amazon.com/pulls-Cabinet-Hardware/s?ie=UTF8&page=1&rh=n%3A511260%2Ck%3Apulls"],
+["14","hhhh","https://www.amazon.com/Leaf-Blowers-Vacuums/b?ie=UTF8&node=553910"],
+["15","hhhh","https://www.amazon.com/Printers/b?ie=UTF8&node=172635"],
+["16","hhhh","https://www.amazon.com/Power-Hedge-Trimmers/b?ie=UTF8&node=553938"],
+["17","hhhh","https://www.amazon.com/kitchen-cabinet-drawer-organization/b?ie=UTF8&node=3743971"],
+["18","hhhh","https://www.amazon.com/Table-and-Chair-Sets/b?ie=UTF8&node=8566630011"],
+["19","hhhh","https://www.amazon.com/kitchen-small-appliances/b?ie=UTF8&node=289913"],
+["20","hhhh","https://www.amazon.com/blenders/b?ie=UTF8&node=289914"],
+["21","hhhh","https://www.amazon.com/Coffee-Makers/b?ie=UTF8&node=7740213011"],
+["22","hhhh","https://www.amazon.com/Stand-Mixers-Small-Appliances-Kitchen/b?ie=UTF8&node=289932"],
+["23","hhhh","https://www.amazon.com/cake-pans/b?ie=UTF8&node=289679"],
+["24","hhhh","https://www.amazon.com/baking-cookie-sheets/b?ie=UTF8&node=289674"],
+["25","hhhh","https://www.amazon.com/Mixing-Bowls/b?ie=UTF8&node=289696"],
+["26","hhhh","https://www.amazon.com/Saucepans-Cookware-Baking-Kitchen/b?ie=UTF8&node=289827"],
+["27","hhhh","https://www.amazon.com/dutch-ovens/b?ie=UTF8&node=289818"],
+["28","hhhh","https://www.amazon.com/bakeware-sets/b?ie=UTF8&node=289669"],
+["29","hhhh","https://www.amazon.com/Skillets-Cookware-Baking-Kitchen-Dining/b?ie=UTF8&node=289829"],
+["30","hhhh","https://www.amazon.com/cookware-sets/b?ie=UTF8&node=289816"],
+["31","hhhh","https://www.amazon.com/glassware/b?ie=UTF8&node=13217501"],
+["32","hhhh","https://www.amazon.com/Bowls/b?ie=UTF8&node=367107011"],
+["33","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/3ONLZS18QOYLK/ref=s9_acss_bw_cg_SBRKit_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=03XMVZRX6GQXHMCHDVWX&pf_rd_t=101&pf_rd_p=6b9a2724-b176-4ae3-bdf8-8207305585e4&pf_rd_i=14544461011"],
+["34","hhhh","https://www.amazon.com/Flatware-Sets-Tableware-Kitchen-Dining/b?ie=UTF8&node=367232011"],
+["35","hhhh","https://www.amazon.com/dinnerware-sets/b?ie=UTF8&node=367146011"],
+["36","hhhh","https://www.amazon.com/door-knob-levers-Hardware-Locks/s?ie=UTF8&page=1&rh=n%3A511276%2Ck%3Adoor%20knob%20and%20levers"],
+["37","hhhh","https://www.amazon.com/Ceiling-Fans/b?ie=UTF8&node=404433011"],
+["38","hhhh","https://www.amazon.com/floor-mirrors/b?ie=UTF8&node=3736381"],
+["39","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/1X82EH9OHRS08/ref=s9_acss_bw_cg_SBRBed_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=DQGCKCTTNQGB2HHWMN0D&pf_rd_t=101&pf_rd_p=fb9d8751-f7ca-4e01-9283-b01af90340ce&pf_rd_i=14544459011"],
+["40","hhhh","https://www.amazon.com/Mattresses/b?ie=UTF8&node=3732981"],
+["41","hhhh","https://www.amazon.com/duvets-down-comforters/b?ie=UTF8&node=10671048011"],
+["42","hhhh","https://www.amazon.com/blankets-throws/b?ie=UTF8&node=1063280"],
+["43","hhhh","https://www.amazon.com/mattress-pads/b?ie=UTF8&node=10671044011"],
+["44","hhhh","https://www.amazon.com/bed-pillows/b?ie=UTF8&node=10671043011"],
+["45","hhhh","https://www.amazon.com/throw-pillows/b?ie=UTF8&node=3732321"],
+["46","hhhh","https://www.amazon.com/Living-Room-Chairs/b?ie=UTF8&node=3733491"],
+["47","hhhh","https://www.amazon.com/sheet-pillowcase-sets/b?ie=UTF8&node=3732781"],
+["48","hhhh","https://www.amazon.com/Nightstands/b?ie=UTF8&node=3733251"],
+["49","hhhh","https://www.amazon.com/comforter-sets/b?ie=UTF8&node=14053321"],
+["50","hhhh","https://www.amazon.com/Beds/b?ie=UTF8&node=3248804011"],
+["51","hhhh","https://www.amazon.com/Dressers/b?ie=UTF8&node=3733261"],
+["52","hhhh","https://www.amazon.com/Pens-Pencils-Writing-Amazon-com/s?ie=UTF8&page=1&rh=n%3A3002949011%2Cp_6%3AATVPDKIKX0DER%2Cp_89%3ABIC%7CDixon%20Ticonderoga%7CExpo%7CFisher%7CPaper%20Mate%7CPentel%7CPilot%7CPrismacolor%7CUni-ball"],
+["53","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/4CGD1MJDJU8R/ref=s9_acss_bw_cg_SBROffic_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=FWAXW557WR3NWAVWAFQE&pf_rd_t=101&pf_rd_p=ea88356d-002f-443a-9a09-30ee8e41a22a&pf_rd_i=14544463011"],
+["54","hhhh","https://www.amazon.com/paper/b?ie=UTF8&node=1069664"],
+["55","hhhh","https://www.amazon.com/Bulletin-Boards/b?ie=UTF8&node=1069306"],
+["56","hhhh","https://www.amazon.com/living-room-ceiling-lights/s?ie=UTF8&page=1&rh=i%3Aaps%2Ck%3Aliving%20room%20ceiling%20lights"],
+["57","hhhh","https://www.amazon.com/File-Storage-Cabinets-Racks-Shelves/b?ie=UTF8&node=1069166"],
+["58","hhhh","https://www.amazon.com/Desk-Accessories-Workspace-Organizers/b?ie=UTF8&node=1069514"],
+["59","hhhh","https://www.amazon.com/Home-Office-Desks/b?ie=UTF8&node=3733671"],
+["60","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/315PP2FCU2W3U/ref=s9_acss_bw_cg_SBRLivin_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=JNBM6DPJN1F2MBH2Q7ZK&pf_rd_t=101&pf_rd_p=bf7fb547-da85-40d6-bfe9-2daa3223a8d0&pf_rd_i=14544497011"],
+["61","hhhh","https://www.amazon.com/Bookcases/b?ie=UTF8&node=10824421"],
+["62","hhhh","https://www.amazon.com/baskets-bins-containers/b?ie=UTF8&node=2422430011"],
+["63","hhhh","https://www.amazon.com/hardware-sets-Bathroom/s?ie=UTF8&page=1&rh=n%3A3755001%2Ck%3Ahardware%20sets"],
+["64","hhhh","https://www.amazon.com/Bathroom-Touch-On-Faucets/b?ie=UTF8&node=6808092011"],
+["65","hhhh","https://www.amazon.com/TV-Stands/b?ie=UTF8&node=14109851"],
+["66","hhhh","https://www.amazon.com/Makeup-Organizers-Amazon-com-Bathroom-Accessories/s?ie=UTF8&page=1&rh=n%3A3743871%2Cp_6%3AATVPDKIKX0DER"],
+["67","hhhh","https://www.amazon.com/Coffee-Tables/b?ie=UTF8&node=3733631"],
+["68","hhhh","https://www.amazon.com/Bathroom-Storage-Organization/b?ie=UTF8&node=2422451011"],
+["69","hhhh","https://www.amazon.com/bathroom-shower-caddies/b?ie=UTF8&node=85969011"],
+["70","hhhh","https://www.amazon.com/toys/b?ie=UTF8&node=165793011"],
+["71","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/CPR4BG6832VN/ref=s9_acss_bw_cg_SBRKids_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=CK6RPTXA6TRMAWHBPZZ3&pf_rd_t=101&pf_rd_p=1ee08974-eb49-42e8-9291-1a0e9ecf45ff&pf_rd_i=14544915011"],
+["72","hhhh","https://www.amazon.com/Bathroom-Mirrors/b?ie=UTF8&node=13749901"],
+["73","hhhh","https://www.amazon.com/crib-sheets-Baby-Brand-4-selected/s?ie=UTF8&page=1&rh=n%3A165796011%2Ck%3Acrib%20sheets%2Cp_6%3AATVPDKIKX0DER%2Cp_89%3AAmazonBasics%7CBedtime%20Originals%7CBurt%27s%20Bees%20Baby%7CPinzon%20by%20Amazon"],
+["74","hhhh","https://www.amazon.com/kids-sheets-pillowcases/b?ie=UTF8&node=13750161"],
+["75","hhhh","https://www.amazon.com/kids-comforter-sets/b?ie=UTF8&node=10671054011"],
+["76","hhhh","https://www.amazon.com/kids-blankets/b?ie=UTF8&node=362533011"],
+["77","hhhh","https://www.amazon.com/Nursery-Bed-Mattresses/b?ie=UTF8&node=166817011"],
+["78","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/6TTJQCPNQDWV/ref=s9_acss_bw_cg_SBRBath_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=8N54D2SNA1XRSNM3R04R&pf_rd_t=101&pf_rd_p=3912210c-b40d-4736-a3cb-5e8aad505d1d&pf_rd_i=14544460011"],
+["79","hhhh","https://www.amazon.com/baby-car-seats-strollers-bedding/b?ie=UTF8&node=165796011"],
+["80","hhhh","https://www.amazon.com/baby-nursery-bedding-cribs-furniture/b?ie=UTF8&node=695338011"],
+["81","hhhh","https://www.amazon.com/Cribs-Furniture/b?ie=UTF8&node=166812011"],
+["82","hhhh","https://www.amazon.com/amazon-fashion/b?ie=UTF8&node=7141123011"],
+["83","hhhh","https://www.amazon.com/bathroom-accessory-sets/b?ie=UTF8&node=3731911"],
+["84","hhhh","https://www.amazon.com/shower-curtains/b?ie=UTF8&node=13749881"],
+["85","hhhh","https://www.amazon.com/bath-rugs/b?ie=UTF8&node=1063242"],
+["86","hhhh","https://www.amazon.com/bath-towels/b?ie=UTF8&node=10789941"],
+["87","hhhh","https://www.amazon.com/vacuums/b?ie=UTF8&node=3743521"],
+["88","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/W2NR78T85IV7/ref=s9_acss_bw_cg_SBREntry_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=TS86GEK0J3GMSXY7B4Q9&pf_rd_t=101&pf_rd_p=9951b330-d53c-4994-9f39-c742b6a8cc7b&pf_rd_i=14544462011"],
+["89","hhhh","https://www.amazon.com/laundry-drying-racks/b?ie=UTF8&node=695488011"],
+["90","hhhh","https://www.amazon.com/entryway-Ceiling-Lights-Lighting-Fans/s?ie=UTF8&hidden-keywords=entryway&page=1&rh=n%3A5486428011%2Ck%3Aentryway"],
+["91","hhhh","https://www.amazon.com/laundry-laundry-hampers/b?ie=UTF8&node=695489011"],
+["92","hhhh","https://www.amazon.com/coat-racks-Storage-Organization-Home-Kitchen/s?ie=UTF8&page=1&rh=n%3A3610841%2Ck%3Acoat%20racks%2Cp_89%3ACoaster%20Home%20Furnishings%7CHeadbourne%7CInterDesign%7CLiberty%7CMonarch%20Specialties%7CPrepac%7CUmbra"],
+["93","hhhh","https://www.amazon.com/washers-dryers/b?node=2383576011"],
+["94","hhhh","https://www.amazon.com/Lawn-Mowers-Tractors-Amazon-com/s?ie=UTF8&page=1&rh=n%3A128066011%2Cp_6%3AATVPDKIKX0DER"],
+["95","hhhh","https://www.amazon.com/handlesets/b?node=573758011"],
+["96","hhhh","https://www.amazon.com/wall-mounted-mirrors/b?ie=UTF8&node=3736411"],
+["97","hhhh","https://www.amazon.com/Sofa-and-Console-Tables/b?ie=UTF8&node=3733651"],
+["98","hhhh","https://www.amazon.com/Outdoor-Hot-Tubs/b?ie=UTF8&node=2475557011"],
+["99","hhhh","https://www.amazon.com/Storage-Benches/b?ie=UTF8&node=3734121"],
+["100","hhhh","https://www.amazon.com/Patio-Umbrellas/b?ie=UTF8&node=13819001"],
+["101","hhhh","https://www.amazon.com/Outdoor-Fryers-Smokers/b?ie=UTF8&node=9001144011"],
+["102","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/3FEEMBN0QPN82/ref=s9_acss_bw_cg_SBRPatio_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=R8QTTMTMMFH2TYXN4N76&pf_rd_t=101&pf_rd_p=897d2651-2635-4754-9ad3-dc737bf46502&pf_rd_i=14544465011"],
+["103","hhhh","https://www.amazon.com/Outdoor-Fire-Pits/b?ie=UTF8&node=14107621"],
+["104","hhhh","https://www.amazon.com/Outdoor-Grills/b?ie=UTF8&node=328983011"],
+["105","hhhh","https://www.amazon.com/Outdoor-Rugs/b?ie=UTF8&node=16509767011"],
+["106","hhhh","https://www.amazon.com/Patio-Furniture-Pillows/b?ie=UTF8&node=3480725011"],
+["107","hhhh","https://www.amazon.com/Hammocks/b?ie=UTF8&node=13881881"],
+["108","hhhh","https://www.amazon.com/Outdoor-Storage/b?ie=UTF8&node=13400641"],
+["109","hhhh","https://www.amazon.com/Patio-Furniture-Sets/b?ie=UTF8&node=3742441"],
+["110","hhhh","https://www.amazon.com/plyo-box-Sports-Outdoors-Amazon-com/s?ie=UTF8&page=1&rh=n%3A3375251%2Ck%3Aplyo%20box%2Cp_6%3AATVPDKIKX0DER"],
+["111","hhhh","https://www.amazon.com/medicine-ball/b?ie=UTF8&node=3408001"],
+["112","hhhh","https://www.amazon.com/kettlebell/b?ie=UTF8&node=16385851"],
+["113","hhhh","https://www.amazon.com/Juming-Ropes-Jump-Rope/b?ie=UTF8&node=3407981"],
+["114","hhhh","https://www.amazon.com/yoga-towels-hot-yoga-towels/b?ie=UTF8&node=7261122011"],
+["115","hhhh","https://www.amazon.com/Chandeliers/b?ie=UTF8&node=3736671"],
+["116","hhhh","https://www.amazon.com/exercise-ball-stability-ball/b?ie=UTF8&node=3407921"],
+["117","hhhh","https://www.amazon.com/yoga-block/b?ie=UTF8&node=3422271"],
+["118","hhhh","https://www.amazon.com/yoga-mat/b?ie=UTF8&node=3422301"],
+["119","hhhh","https://www.amazon.com/b?ie=UTF8&node=16861787011"],
+["120","hhhh","https://www.amazon.com/home-gym-equipment/b?ie=UTF8&node=3408411"],
+["121","hhhh","https://www.amazon.com/Table-Runners/b?ie=UTF8&node=3742021"],
+["122","hhhh","https://www.amazon.com/Cloth-Napkins/b?ie=UTF8&node=3741981"],
+["123","hhhh","https://www.amazon.com/Place-Mats-Kitchen-Table-Linens/b?ie=UTF8&node=3742001"],
+["124","hhhh","https://www.amazon.com/Serving-Dishes-Trays-Platters/b?ie=UTF8&node=367201011"],
+["125","hhhh","https://www.amazon.com/Tablecloths-Kitchen-Table-Linens/b?ie=UTF8&node=3742031"],
+["126","hhhh","https://www.amazon.com/workout-bench-weight-bench/b?ie=UTF8&node=3408341"],
+["127","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/300DJEREEH1O2/ref=s9_acss_bw_cg_SBRDine_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=V4T9NYR15R5407MCXXWP&pf_rd_t=101&pf_rd_p=8dde5517-aa6f-4975-a282-9256f7902e70&pf_rd_i=14544644011"],
+["128","hhhh","https://www.amazon.com/Weight-Plates/b?ie=UTF8&node=3408441"],
+["129","hhhh","https://www.amazon.com/dumbbells-dumbbell-set/b?ie=UTF8&node=3408401"],
+["130","hhhh","https://www.amazon.com/ideas/amzn1.account.AEF6JSI34ODLA4PQRGKZVNEXNGEQ/368I8DIH7TG7M/ref=s9_acss_bw_cg_SBRGym_2a1_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-3&pf_rd_r=8640V1PBQ99REQXEV84N&pf_rd_t=101&pf_rd_p=1713b91a-c035-4554-9251-3111e2bb75cc&pf_rd_i=17466357011"],
+["131","hhhh","https://www.amazon.com/Buffets-and-Sideboards/b?ie=UTF8&node=3733831"],
+["132","hhhh","https://www.amazon.com/Kitchen-and-Dining-Room-Tables/b?ie=UTF8&node=3733811"],
+["133","hhhh","https://www.amazon.com/Kitchen-and-Dining-Room-Chairs/b?ie=UTF8&node=3733821"],
+["134","hhhh","https://www.amazon.com/rowing-machine/b?ie=UTF8&node=3407791"],
+["135","hhhh","https://www.amazon.com/stationary-bike-exercise-bikes/b?ie=UTF8&node=3407781"],
+["136","hhhh","https://www.amazon.com/treadmill-home-treadmill/b?ie=UTF8&node=3407831"],
+["137","hhhh","https://www.amazon.com/elliptical-machine-elliptical-trainers/b?ie=UTF8&node=3407771"],
+["138","hhhh","https://www.amazon.com/artwork/b?ie=UTF8&node=3736081"],
+["139","hhhh","https://www.amazon.com/candles/b?ie=UTF8&node=3734391"],
+["140","hhhh","https://www.amazon.com/home-fragrance/b?ie=UTF8&node=3734741"],
+["141","hhhh","https://www.amazon.com/throws/b?ie=UTF8&node=14058581"],
+["142","hhhh","https://www.amazon.com/Lighting-26-Ceiling-Fans/b?ie=UTF8&node=495224"],
+["143","hhhh","https://www.amazon.com/clocks/b?ie=UTF8&node=542938"],
+["144","hhhh","https://www.amazon.com/floating-shelves/b?ie=UTF8&node=3743991"],
+["145","hhhh","https://www.amazon.com/draperies-curtains/b?ie=UTF8&node=3736141"],
+["146","hhhh","https://www.amazon.com/mirrors/b?ie=UTF8&node=3736371"],
+["147","hhhh","https://www.amazon.com/vases/b?ie=UTF8&node=3745451"],
+["148","hhhh","https://www.amazon.com/decorative-pillows-inserts-covers/b?ie=UTF8&node=1063262"],
+["149","hhhh","https://www.amazon.com/picture-frames/b?ie=UTF8&node=1063286"],
+["150","hhhh","https://www.amazon.com/artificial-plants/b?ie=UTF8&node=14087351"],
+["151","hhhh","https://www.amazon.com/Area-Rugs-3-x-5/s?ie=UTF8&page=1&rh=n%3A684541011%2Cp_n_size_browse-bin%3A369535011"],
+["152","hhhh","https://www.amazon.com/Area-Rugs-4-x-6/s?ie=UTF8&page=1&rh=n%3A684541011%2Cp_n_size_browse-bin%3A369536011"],
+["153","hhhh","https://www.amazon.com/Area-Rugs-5-x-8/s?ie=UTF8&page=1&rh=n%3A684541011%2Cp_n_size_browse-bin%3A369537011"],
+["154","hhhh","https://www.amazon.com/Area-Rugs-6-x-9/s?ie=UTF8&page=1&rh=n%3A684541011%2Cp_n_size_browse-bin%3A369538011"],
+["155","hhhh","https://www.amazon.com/Area-Rugs-8-x-10/s?ie=UTF8&page=1&rh=n%3A684541011%2Cp_n_size_browse-bin%3A369539011"],
+["156","hhhh","https://www.amazon.com/Area-Rugs-9-x-12/s?ie=UTF8&page=1&rh=n%3A684541011%2Cp_n_size_browse-bin%3A369540011"],
+["157","hhhh","https://www.amazon.com/Home-Decorative-Accessories/b?ie=UTF8&node=3295676011"],
+["158","hhhh","https://www.amazon.com/Sofas-and-Couches/b?ie=UTF8&node=3733551"],
+["159","hhhh","https://www.amazon.com/TV-and-Media-Furniture/b?ie=UTF8&node=1063310"],
+["160","hhhh","https://www.amazon.com/Home-Office-Desk-Chairs/b?ie=UTF8&node=3733721"],
+["161","hhhh","https://www.amazon.com/Living-Room-Tables/b?ie=UTF8&node=680098011"],
+["162","hhhh","https://www.amazon.com/Kitchen-Rugs/b?ie=UTF8&node=644050011"],
+["163","hhhh","https://www.amazon.com/doormats/b?ie=UTF8&node=3742271"],
+["164","hhhh","https://www.amazon.com/Outdoor-Rugs-Area-Runners-Pads/s?ie=UTF8&page=1&rh=n%3A684541011%2Ck%3AOutdoor%20Rugs"],
+["165","hhhh","https://www.amazon.com/rug-pads/b?ie=UTF8&node=3735721"],
+["166","hhhh","https://www.amazon.com/kids-room-rugs/b?ie=UTF8&node=404457011"],
+["167","hhhh","https://www.amazon.com/runners/b?ie=UTF8&node=3735831"],
+["168","hhhh","https://www.amazon.com/Kitchen-Table-Linens-Dining/b?ie=UTF8&node=1063916"],
+["169","hhhh","https://www.amazon.com/pressure-cookers/b?ie=UTF8&node=289825"],
+["170","hhhh","https://www.amazon.com/Grill-Pans/b?ie=UTF8&node=289822"],
+["171","hhhh","https://www.amazon.com/Woks-Stir-Fry-Pans/b?ie=UTF8&node=289834"],
+["172","hhhh","https://www.amazon.com/pans/b?ie=UTF8&node=3737221"],
+["173","hhhh","https://www.amazon.com/kitchen-storage-organization/b?ie=UTF8&node=510136"],
+["174","hhhh","https://www.amazon.com/Food-Service-Equipment-Supplies/b?ie=UTF8&node=6054382011"],
+["175","hhhh","https://www.amazon.com/cutlery/b?ie=UTF8&node=289851"],
+["176","hhhh","https://www.amazon.com/tools-gadgets/b?ie=UTF8&node=289754"],
+["177","hhhh","https://www.amazon.com/Tabletop-Accessories/b?ie=UTF8&node=3194593011"],
+["178","hhhh","https://www.amazon.com/serveware/b?ie=UTF8&node=367165011"],
+["179","hhhh","https://www.amazon.com/flatware/b?ie=UTF8&node=13218891"],
+["180","hhhh","https://www.amazon.com/Plates/b?ie=UTF8&node=367147011"],
+["181","hhhh","https://www.amazon.com/juicers/b?ie=UTF8&node=289926"],
+["182","hhhh","https://www.amazon.com/slow-cookers/b?ie=UTF8&node=289940"],
+["183","hhhh","https://www.amazon.com/food-processors/b?ie=UTF8&node=289920"],
+["184","hhhh","https://www.amazon.com/Microwave-Ovens-Small-Appliances/b?ie=UTF8&node=289935"],
+["185","hhhh","https://www.amazon.com/rice-cookers/b?ie=UTF8&node=678540011"],
+["186","hhhh","https://www.amazon.com/deep-fryers/b?ie=UTF8&node=289918"],
+["187","hhhh","https://www.amazon.com/Coffee-Grinders/b?ie=UTF8&node=289750"],
+["188","hhhh","https://www.amazon.com/Coffee-Presses-Makers-Tea-Espresso/b?ie=UTF8&node=289749"],
+["189","hhhh","https://www.amazon.com/toasters/b?ie=UTF8&node=289938"],
+["190","hhhh","https://www.amazon.com/bread-loaf-pans/b?ie=UTF8&node=289675"],
+["191","hhhh","https://www.amazon.com/decorating-tools/b?ie=UTF8&node=289727"],
+["192","hhhh","https://www.amazon.com/baking-tools-accessories/b?ie=UTF8&node=289719"],
+["193","hhhh","https://www.amazon.com/Bakers-Casseroles/b?ie=UTF8&node=289671"],
+["194","hhhh","https://www.amazon.com/single-serve-brewers/b?ie=UTF8&node=2474054011"],
+["195","hhhh","https://www.amazon.com/Stovetop-Espresso-Moka-Pots/b?ie=UTF8&node=14163721"],
+["196","hhhh","https://www.amazon.com/Coffee-Tea/b?ie=UTF8&node=7083296011"],
+["197","hhhh","https://www.amazon.com/Espresso-Machines-Coffee-Tea-Kitchen/b?ie=UTF8&node=289748"],
+["198","hhhh","https://www.amazon.com/Drip-Coffee-Machines-Makers/b?ie=UTF8&node=289745"],
+["199","hhhh","https://www.amazon.com/Espresso-Machine-Coffeemaker-Combos-Coffee/b?ie=UTF8&node=14163731"],
+["200","hhhh","https://www.amazon.com/kitchen-dining/b?ie=UTF8&node=284507"],
+["201","hhhh","https://www.amazon.com/Gardening-Pots-Planters-Accessories/b?ie=UTF8&node=3480694011"],
+["202","hhhh","https://www.amazon.com/Garden-Sculptures-Statues/b?ie=UTF8&node=553802"],
+["203","hhhh","https://www.amazon.com/Pools-Hot-Tubs-Supplies/b?ie=UTF8&node=1272941011"],
+["204","hhhh","https://www.amazon.com/Plants-Seeds-Bulbs/b?ie=UTF8&node=3480662011"],
+["205","hhhh","https://www.amazon.com/Canopies-Gazebos-Pergolas/b?ie=UTF8&node=14135021011"],
+["206","hhhh","https://www.amazon.com/Outdoor-Power-Lawn-Equipment/b?ie=UTF8&node=551242"],
+["207","hhhh","https://www.amazon.com/gardening-tools/b?node=128061011"],
+["208","hhhh","https://www.amazon.com/Lawn-Mowers-Tractors/b?ie=UTF8&node=128066011"],
+["209","hhhh","https://www.amazon.com/Patio-Seating/b?ie=UTF8&node=9001152011"],
+["210","hhhh","https://www.amazon.com/outdoor-lighting/b?node=495236"],
+["211","hhhh","https://www.amazon.com/Patio-Lawn-Garden/b?ie=UTF8&node=2972638011"],
+["212","hhhh","https://www.amazon.com/Power-26-Hand-Tools/b?ie=UTF8&node=328182011"],
+["213","hhhh","https://www.amazon.com/Kitchen-26-Bath-Fixtures/b?ie=UTF8&node=3754161"],
+["214","hhhh","https://www.amazon.com/light-bulbs/b?node=322525011"],
+["215","hhhh","https://www.amazon.com/Appliances/b?ie=UTF8&node=2619525011"],
+["216","hhhh","https://www.amazon.com/electrical/b?node=495266"],
+["217","hhhh","https://www.amazon.com/Tool-Organizers/b?ie=UTF8&node=13400691"],
+["218","hhhh","https://www.amazon.com/ladders/b?node=553470"],
+["219","hhhh","https://www.amazon.com/hardware/b?node=511228"],
+["220","hhhh","https://www.amazon.com/Safety-26-Security/b?ie=UTF8&node=3180231"],
+["221","hhhh","https://www.amazon.com/Woodworking-Shop-Tools-Hardware/b?ie=UTF8&node=541016"],
+["222","hhhh","https://www.amazon.com/Tools-and-Home-Improvement/b?ie=UTF8&node=228013"],
+["223","hhhh","https://www.amazon.com/smart-home-devices/b?ie=UTF8&node=6563140011"],
+["224","hhhh","https://www.amazon.com/area-rugs-runners-pads/b?ie=UTF8&node=1063298"],
+["225","hhhh","https://www.amazon.com/b?ie=UTF8&node=17733374011"],
+["226","hhhh","https://www.amazon.com/b?ie=UTF8&node=17732894011"],
+["227","hhhh","https://www.amazon.com/b?ie=UTF8&node=17733371011"],
+["228","hhhh","https://www.amazon.com/b?ie=UTF8&node=17701288011"],
+["229","hhhh","https://www.amazon.com/b?ie=UTF8&node=17701284011"],
+["230","hhhh","https://www.amazon.com/b?ie=UTF8&node=17701285011"],
+["231","hhhh","https://www.amazon.com/b?ie=UTF8&node=17739089011"],
+["232","hhhh","https://www.amazon.com/b?ie=UTF8&node=17736594011"],
+["233","hhhh","https://www.amazon.com/b?ie=UTF8&node=17732879011"],
+["234","hhhh","https://www.amazon.com/area-rugs/b?ie=UTF8&node=684541011"],
+["235","hhhh","https://www.amazon.com/Melissa-Doug-Toys-Games/b?ie=UTF8&node=11095706011"],
+["236","hhhh","https://www.amazon.com/magformers-Toys-Games/s?ie=UTF8&page=1&rh=n%3A165793011%2Ck%3Amagformers"],
+["237","hhhh","https://www.amazon.com/b?ie=UTF8&node=11153921011"],
+["238","hhhh","https://www.amazon.com/b?ie=UTF8&node=17386931011"],
+["239","hhhh","https://www.amazon.com/play-doh-Toys-Games/s?ie=UTF8&page=1&rh=n%3A165793011%2Ck%3Aplay%20doh"],
+["240","hhhh","https://www.amazon.com/Kids-Family-Video-Games/b?ie=UTF8&node=8794716011"],
+["241","hhhh","https://www.amazon.com/kids-stuffed-animals-toys/b?ie=UTF8&node=166461011"],
+["242","hhhh","https://www.amazon.com/b?ie=UTF8&node=14725559011"],
+["243","hhhh","https://www.amazon.com/outdoor-toys-kids-play/b?ie=UTF8&node=166420011"],
+["244","hhhh","https://www.amazon.com/kids-bikes-skates-rideons-scooter-skateboard/b?ie=UTF8&node=256994011"],
+["245","hhhh","https://www.amazon.com/kids-play-vehicles-die-cast/b?ie=UTF8&node=166508011"],
+["246","hhhh","https://www.amazon.com/Grown-Up-Toys/b?ie=UTF8&node=3226142011"],
+["247","hhhh","https://www.amazon.com/kids-hobbies-coins-models/b?ie=UTF8&node=276729011"],
+["248","hhhh","https://www.amazon.com/kids-games-board-classic-dvd-travel/b?ie=UTF8&node=166220011"],
+["249","hhhh","https://www.amazon.com/Costumes-Pretend-Play/b?ie=UTF8&node=166316011"],
+["250","hhhh","https://www.amazon.com/kids-construction-blocks-models-building-sets/b?ie=UTF8&node=166092011"],
+["251","hhhh","https://www.amazon.com/kids-toys-dolls-accessories/b?ie=UTF8&node=166118011"],
+["252","hhhh","https://www.amazon.com/b?ie=UTF8&node=17923675011"],
+["253","hhhh","https://www.amazon.com/b?ie=UTF8&node=17728828011"],
+["254","hhhh","https://www.amazon.com/Prime-Exclusive-Phones/b?ie=UTF8&node=14613304011"],
+["255","hhhh","https://www.amazon.com/Amazon-Devices/b?ie=UTF8&node=2102313011"],
+["256","hhhh","https://www.amazon.com/b?ie=UTF8&node=17608673011"],
+["257","hhhh","https://www.amazon.com/b?ie=UTF8&node=17862645011"],
+["258","hhhh","https://www.amazon.com/b?ie=UTF8&node=17862646011"],
+["259","hhhh","https://www.amazon.com/b/?ie=UTF8&node=12034488011"],
+["260","hhhh","https://www.amazon.com/b?ie=UTF8&node=17874140011"],
+["261","hhhh","https://www.amazon.com/b?ie=UTF8&node=17874139011"],
+["262","hhhh","https://www.amazon.com/b?ie=UTF8&node=17874141011"],
+["263","hhhh","https://www.amazon.com/b?ie=UTF8&node=17324658011"],
+["264","hhhh","https://www.amazon.com/b?ie=UTF8&node=16786441011"],
+["265","hhhh","https://www.amazon.com/b?ie=UTF8&node=17874192011"],
+["266","hhhh","https://www.amazon.com/b?ie=UTF8&node=17874191011"],
+["267","hhhh","https://www.amazon.com/b?ie=UTF8&node=17874142011"],
+["268","hhhh","https://www.amazon.com/b?ie=UTF8&node=17716255011"],
+["269","hhhh","https://www.amazon.com/b?ie=UTF8&node=17324664011"],
+["270","hhhh","https://www.amazon.com/b?ie=UTF8&node=17719895011"],
+["271","hhhh","https://www.amazon.com/b?ie=UTF8&node=15578318011"],
+["272","hhhh","https://www.amazon.com/b?ie=UTF8&node=16786440011"],
+["273","hhhh","https://www.amazon.com/b?ie=UTF8&node=10161523011"],
+["274","hhhh","https://www.amazon.com/b?ie=UTF8&node=17716241011"],
+["275","hhhh","https://www.amazon.com/b?ie=UTF8&node=17862647011"],
+["276","hhhh","https://www.amazon.com/b?ie=UTF8&node=17862648011"],
+["277","hhhh","https://www.amazon.com/b?ie=UTF8&node=17324659011"],
+["278","hhhh","https://www.amazon.com/b?ie=UTF8&node=17886609011"],
+["279","hhhh","https://www.amazon.com/b?ie=UTF8&node=16977389011"],
+["280","hhhh","https://www.amazon.com/justice-league-Toys-Games-Amazon-com/s?ie=UTF8&field-enc-merchantbin=ATVPDKIKX0DER&page=1&rh=n%3A165793011%2Ck%3Ajustice%20league"],
+["281","hhhh","https://www.amazon.com/harry-potter-Toys-Games-Amazon-com/s?ie=UTF8&field-enc-merchantbin=ATVPDKIKX0DER&page=1&rh=n%3A165793011%2Ck%3Aharry%20potter"],
+["282","hhhh","https://www.amazon.com/Test-Prep-Study-Guides/b?ie=UTF8&node=684300011"],
+["283","hhhh","https://www.amazon.com/Social-Sciences-Books/b?ie=UTF8&node=468214"],
+["284","hhhh","https://www.amazon.com/Medicine-New-Used-Textbooks-Books/b?ie=UTF8&node=468228"],
+["285","hhhh","https://www.amazon.com/Sciences-New-Used-Textbooks-Books/b?ie=UTF8&node=468216"],
+["286","hhhh","https://www.amazon.com/Reference/b?ie=UTF8&node=684283011"],
+["287","hhhh","https://www.amazon.com/Humanities-New-Used-Textbooks-Books/b?ie=UTF8&node=468206"],
+["288","hhhh","https://www.amazon.com/Education-New-Used-Textbooks-Books/b?ie=UTF8&node=468224"],
+["289","hhhh","https://www.amazon.com/Law-New-Used-Textbooks-Books/b?ie=UTF8&node=468222"],
+["290","hhhh","https://www.amazon.com/Engineering-New-Used-Textbooks-Books/b?ie=UTF8&node=468212"],
+["291","hhhh","https://www.amazon.com/Communications-Humanities-Books/b?ie=UTF8&node=468226"],
+["292","hhhh","https://www.amazon.com/Computer-Science-Information-Systems-Books/b?ie=UTF8&node=468204"],
+["293","hhhh","https://www.amazon.com/Business-Finance-Books/b?ie=UTF8&node=468220"],
+["294","hhhh","https://www.amazon.com/b?ie=UTF8&node=13431611011"],
+["295","hhhh","https://www.amazon.com/kids-arts-crafts-easel-paper-marker-stamp/b?ie=UTF8&node=166057011"],
+["296","hhhh","https://www.amazon.com/b?ie=UTF8&node=17924401011"],
+["297","hhhh","https://www.amazon.com/b?ie=UTF8&node=17506220011"],
+["298","hhhh","https://www.amazon.com/kids-toys-action-figures-accessories/b?ie=UTF8&node=165993011"],
+["299","hhhh","https://www.amazon.com/Toys-Games-14-Years-Up/s?ie=UTF8&page=1&rh=n%3A165793011%2Cp_n_age_range%3A5442388011"],
+["300","hhhh","https://www.amazon.com/Toys-Games-5-7-Years/s?ie=UTF8&page=1&rh=n%3A165793011%2Cp_n_age_range%3A165936011"],
+["301","hhhh","https://www.amazon.com/Toys-Games-8-13-Years/s?ie=UTF8&page=1&rh=n%3A165793011%2Cp_n_age_range%3A5442387011"],
+["302","hhhh","https://www.amazon.com/Toys-Games-2-4-Years/s?ie=UTF8&page=1&rh=n%3A165793011%2Cp_n_age_range%3A165890011"],
+["303","hhhh","https://www.amazon.com/Toys-Games-Birth-24-Months/s?ie=UTF8&page=1&rh=n%3A165793011%2Cp_n_age_range%3A165813011"],
+["304","hhhh","https://www.amazon.com/b?ie=UTF8&node=17923674011"],
+["305","hhhh","https://www.amazon.com/AmazonBasics/b?ie=UTF8&node=10112675011"],
+["306","hhhh","https://www.amazon.com/b?ie=UTF8&node=17795807011"],
+["307","hhhh","https://www.amazon.com/b?ie=UTF8&node=17733381011"],
+["308","hhhh","https://www.amazon.com/b?ie=UTF8&node=17732877011"],
+["309","hhhh","https://www.amazon.com/b?ie=UTF8&node=17732878011"],
+["310","hhhh","https://www.amazon.com/Arts-Crafts-Sewing/b?ie=UTF8&node=2617941011"],
+["311","hhhh","https://www.amazon.com/Pie-Pans/b?ie=UTF8&node=14067421"],
+["312","hhhh","https://www.amazon.com/Seasonal-D%C3%A9cor-Home/s?ie=UTF8&hidden-keywords=Autumn%7Cfall&page=1&rh=n%3A11434603011"],
+["313","hhhh","https://www.amazon.com/b?ie=UTF8&node=17922270011"],
+["314","hhhh","https://www.amazon.com/b?ie=UTF8&node=17296384011"],
+["315","hhhh","https://www.amazon.com/dining-entertaining/b?ie=UTF8&node=13162311"],
+["316","hhhh","https://www.amazon.com/coffee-tea-espresso/b?ie=UTF8&node=915194"],
+["317","hhhh","https://www.amazon.com/bakeware/b?ie=UTF8&node=289668"],
+["318","hhhh","https://www.amazon.com/b?ie=UTF8&node=17733373011"],
+["319","hhhh","https://www.amazon.com/b?ie=UTF8&node=17696595011"],
+["320","hhhh","https://www.amazon.com/b?ie=UTF8&node=17695193011"],
+["321","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907768011"],
+["322","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907769011"],
+["323","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907766011"],
+["324","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907765011"],
+["325","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907767011"],
+["326","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907764011"],
+["327","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907762011"],
+["328","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907763011"],
+["329","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907760011"],
+["330","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907759011"],
+["331","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907761011"],
+["332","hhhh","https://www.amazon.com/b?ie=UTF8&node=16907758011"],
+["333","hhhh","https://www.amazon.com/b?ie=UTF8&node=15645192011"],
+["334","hhhh","https://www.amazon.com/b?ie=UTF8&node=17732895011"],
+["335","hhhh","https://www.amazon.com/cookware/b?ie=UTF8&node=289814"],
+["336","hhhh","https://www.amazon.com/b?ie=UTF8&node=17932490011"],
+["337","hhhh","https://www.amazon.com/Measuring-26-Layout-Tools/b?ie=UTF8&node=553244"],
+["338","hhhh","https://www.amazon.com/Air-Tools-Power-Hand/b?ie=UTF8&node=552684"],
+["339","hhhh","https://www.amazon.com/Concrete-Tools/b?ie=UTF8&node=552992"],
+["340","hhhh","https://www.amazon.com/Power-Tool-Parts-26-Accessories/b?ie=UTF8&node=552262"],
+["341","hhhh","https://www.amazon.com/Hand-Tools/b?ie=UTF8&node=551238"],
+["342","hhhh","https://www.amazon.com/Power-Tools/b?ie=UTF8&node=551236"],
+["343","hhhh","https://www.amazon.com/b?ie=UTF8&node=17304249011"],
+["344","hhhh","https://www.amazon.com/b?ie=UTF8&node=17165932011"],
+["345","hhhh","https://www.amazon.com/b?ie=UTF8&node=17732888011"],
+["346","hhhh","https://www.amazon.com/b?ie=UTF8&node=17871122011"],
+["347","hhhh","https://www.amazon.com/tuya/s?ie=UTF8&page=1&rh=i%3Aaps%2Ck%3Atuya%2Cp_n_amazon_certified%3A16741513011"],
+["348","hhhh","https://www.amazon.com/b?ie=UTF8&node=17934444011"],
+["349","hhhh","https://www.amazon.com/smart-othersolutions/b?ie=UTF8&node=16334613011"],
+["350","hhhh","https://www.amazon.com/Amazon-Device-Accessories-Echo-Alexa-Devices/s?ie=UTF8&page=1&rh=n%3A370783011%2Cp_n_feature_browse-bin%3A16926006011"],
+["351","hhhh","https://www.amazon.com/b?ie=UTF8&node=15443147011"],
+]
+        urls=[
+["1","hh","https://www.amazon.com/home-garden-kitchen-furniture-bedding/b/ref=sd_allcat_home_storefront?ie=UTF8&node=1055398"],
+["2","hh","https://www.amazon.com/Shop-by-Room/b/ref=sd_allcat_home_shopbyroom?ie=UTF8&node=14544458011"],
+["3","hh","https://www.amazon.com/shopbylook?ref_=nav_shopall_home_sbl"],
+["4","hh","https://www.amazon.com/home-d%C3%83%C2%A9cor/b/ref=sd_allcat_home_homedecor?ie=UTF8&node=1063278"],
+["5","hh","https://www.amazon.com/Furniture/b/ref=sd_allcat_furn?ie=UTF8&node=1063306"],
+["6","hh","https://www.amazon.com/kitchen-dining/b/ref=sd_allcat_ki?ie=UTF8&node=284507"],
+["7","hh","https://www.amazon.com/bedding-bath-sheets-towels/b/ref=sd_allcat_bb?ie=UTF8&node=1057792"],
+["8","hh","https://www.amazon.com/Patio-Lawn-Garden/b/ref=sd_allcat_lp?ie=UTF8&node=2972638011"],
+["9","hh","https://www.amazon.com/Mattresses-Box-Springs/b/ref=sd_allcat_home_mattresses?ie=UTF8&node=3732961"],
+["10","hh","https://www.amazon.com/Lighting-and-Ceiling-Fans/b/ref=sd_allcat_home_lighting?ie=UTF8&node=495224"],
+["11","hh","https://www.amazon.com/storage-organization/b/ref=sd_allcat_home_storageandorg?ie=UTF8&node=3610841"],
+["12","hh","https://www.amazon.com/Appliances/b/ref=sd_allcat_ha?ie=UTF8&node=2619525011"],
+["13","hh","https://www.amazon.com/Art/b/ref=sd_allcat_fine_art?ie=UTF8&node=6685269011"],
+["14","hh","https://www.amazon.com/Collectibles/b/ref=sd_allcat_collectibles_fine_art?ie=UTF8&node=4991425011"],
+["15","hh","https://www.amazon.com/Arts-Crafts-Sewing/b/ref=sd_allcat_sch?ie=UTF8&node=2617941011"],
+["16","hh","https://www.amazon.com/pet-shops-dogs-cats-hamsters-kittens/b/ref=sd_allcat_ps?ie=UTF8&node=2619533011"],
+["17","hh","https://www.amazon.com/Event-Party-Supplies/b/ref=sd_allcat_ep?ie=UTF8&node=901590"],
+["18","hh","https://www.amazon.com/Tools-and-Home-Improvement/b/ref=sd_allcat_hi2?ie=UTF8&node=228013"],
+["19","hh","https://www.amazon.com/Power-Tools-and-Hand-Tools/b/ref=sd_allcat_hi?ie=UTF8&node=328182011"],
+["20","hh","https://www.amazon.com/Lighting-and-Ceiling-Fans/b/ref=sd_allcat_llf?ie=UTF8&node=495224"],
+["21","hh","https://www.amazon.com/Kitchen-and-Bath-Fixtures/b/ref=sd_allcat_kbf?ie=UTF8&node=3754161"],
+["22","hh","https://www.amazon.com/cookware/b/ref=sd_allcat_cookware?ie=UTF8&node=289814"],
+["23","hh","https://www.amazon.com/Hardware-Locks-and-Fasteners/b/ref=sd_allcat_hdw?ie=UTF8&node=511228"],
+["24","hh","https://www.amazon.com/smart-home/b/ref=sd_allcat_homaut?ie=UTF8&node=6563140011"],
+["25","hh","https://www.amazon.com/Low-Price-With-Free-Shipping/bbp/ref=sd_allcat_bbp_bb_01a411_in_sd_w_ur?_encoding=UTF8&category=%2Fhome-decor"],
+["26","hh","https://www.amazon.com/b/ref=sd_allcat_home_pinzon?ie=UTF8&node=10112676011"],
+["27","hh","https://www.amazon.com/stores/node/7633572011?_encoding=UTF8&ref_=sd_allcat_home_rivet"],
+["28","hh","https://www.amazon.com/stores/node/17384727011?_encoding=UTF8&ref_=sd_allcat_home_stoneandbeam"],
+["29","hh","https://www.amazon.com/Amazon-Launchpad/b/ref=sd_allcat_home_launchpad?ie=UTF8&node=12034488011"],
+["30","hh","https://www.amazon.com/wedding/home?_encoding=UTF8&ref_=sd_allcat_home_weddingregistry"],
+["31","hh","https://www.amazon.com/move/ref=sd_allcat_home_amazonmove"],
+["32","hh","https://www.amazon.com/b/ref=sd_allcat_guru_gno?ie=UTF8&node=17443502011"],
+["33","hh","https://www.amazon.com/b/ref=sd_allcat_guru_gno?ie=UTF8&node=12643063011"],
+["34","hh","https://www.amazon.com/b/ref=gurus_shrul?node=14586916011"],
+["35","hh","https://www.amazon.com/Computers-Electronics-Services/b/ref=sd_allcat_localsvs_ce?ie=UTF8&node=10192836011"],
+["36","hh","https://www.amazon.com/In-Home-Services/b/ref=sd_allcat_localsvs_home?ie=UTF8&node=10192825011"],
+["37","hh","https://www.amazon.com/Furniture-Assembly-Services/b/ref=sd_allcat_localsvs_assembly?ie=UTF8&node=11525233011"],
+["38","hh","https://www.amazon.com/Cleaning-Services/b/ref=sd_allcat_localsvs_cleaning?ie=UTF8&node=11525224011"],
+["39","hh","https://www.amazon.com/Plumbing-Services/b/ref=sd_allcat_localsvs_plumbing?ie=UTF8&node=10192830011"],
+["40","hh","https://www.amazon.com/Electrical-Wiring-Services/b/ref=sd_allcat_localsvs_electrical?ie=UTF8&node=10192827011"],
+["41","hh","https://www.amazon.com/Home-Theater-Setup-Installation-Services/b/ref=sd_allcat_localsvs_hometheater?ie=UTF8&node=10192838011"],
+["42","hh","https://www.amazon.com/b/ref=sd_allcat_localsvs_all?ie=UTF8&node=8098158011"],
+]
+        for url in urls:
+            try:
+                #req = scrapy.Request(url[3] , headers={ 'Accept-Encoding': 'gzip, deflate, br' , 'Accept-Language': 'en-US,en;q=0.8' , 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36' , 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' , 'Cache-Control': 'max-age=0' },callback=self.parse6)
+                #req = scrapy.Request(url[3] , headers= {'Accept-Encoding': 'gzip, deflate, br' , 'Accept-Language': 'en-US,en;q=0.9' , 'Upgrade-Insecure-Requests': '1' , 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36' , 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' , 'Cache-Control': 'max-age=0' , 'Connection': 'keep-alive'}, callback=self.parse6)
+                #req = scrapy.Request(url[2] , callback=self.parse6)
+                #req = scrapy.Request(url[2] , headers={'Accept-Encoding': 'gzip, deflate, br' , 'Accept-Language': 'en-US,en;q=0.9' , 'Upgrade-Insecure-Requests': '1' , 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36' , 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' , 'Cache-Control': 'max-age=0', 'Connection': 'keep-alive' }, callback=self.parse6)
+                req = scrapy.Request(url[2] , callback=self.parse6)
+                req.meta['page_id']=url[0]
+                req.meta['category']=url[1]
+                #req.cookies = {'lc-main':'en_US', 's_nr':'1503816974090-New', 's_vnum':'1935816974090%26vn%3D1', 's_dslv':'1503816974091', 'x-main':'pHlb3N0WUwENeYPsqI@jzfF7PXLCCMcJSFiGwcdKfrlzzhc8yQR4kOovInsAXJRe', 'at-main':'Atza|IwEBIF45RJQgsZLrUGO7JaJnp1uVC-RDIfDCqwjV0PeKEDcSIP7e0Pvcm_n-R4iCtwyo7zXH7KLDakbXVsW-9UevBLsZEeSIH2YZJFCjQqDsNAySplN1BcQ1tUj5kmj24vddIVYyi7vx3S0B-tkr9EISA5O5_d5Tr--5JO2qiruKCKawd1MLIyk8KFGS2KdQJGW9wwb9fJf6C7Fk4_7UiW5C3D1DLeuP3VXdar3-_S3yvGXRindK-xRNl3O_YFLRo-a_yn9_Z1V8vNj6kvWgzui_fOIRGrsI9qCHAJpcpt5Nh4Ta5n6-ALqNPkS-zbWlmMkZMgWsZb5EwLk8qr5O_FUA9Be8bqkneub7AuYy2QcvE01rYqkAKgAm4QKR5MSCXDQg8Fquyibqt_a3TRBYXTOzPnoedkm7JdBsUtVGYs4TBNssF4KGFefA1cQRLvxAhHfZe58', 'x-wl-uid':'1QBgT0TBwoj9RQ+QP7eh8ocBTABgs1739+rzq1e3s1iwjoSRYnMpbAczaaknzT2id2ww9iSyiyXd3OQeaJ9Nm9xZrZOKqXNWIDJihS4V7CV+xlp+PQA7T/ILJyNBZ15so9XvNPTzCBQA=', 'x-amz-captcha-1':'1511784189246059', 'x-amz-captcha-2':'e+dIUFBcjimZCAzt1M7ENg==', 'skin':'noskin', 'session-token':'iLbxbiSqExhaR4LPazKup8FEME8wVof1IaYWHpuSZwkY9Pk99Za2t1nVKi07sKUQrt7vqJ1e8hVd+j+XnNR0sr/z1MFubVFga4Gs7V0Ex2bhH+zFs7fU23+xahjvRAHWjVywkXsJyB8REkaRCDWd5GhE6loyew2Ibyol3vtiEyuebDuB1Y1hwVGYY+DGF8ujzqDQvV0psuzZg3JwtZCgfaymOM9XSIYP8OlojdlhdY8g6texOGn+IwTndrN3g5zYg4TsvZU7oWYXp6bVS8QP+A==', 'csm-hit':'s-YCC0NCGB2CHZFXZA740S|1513777168018', 'ubid-main':'151-8001146-5395566', 'session-id-time':'2082787201l', 'session-id':'151-4943311-4733238' }
+                #req.cookies = { 'x-wl-uid':'1y8ltVLwKU/L4uHVRT4wcyu32QxGmsLap3PS10lHQ8I4lHwvcV3mdItRxlTQQbVCy6hcltYxKLMM=', 's_nr':'1498670542228-New', 's_vnum':'1930670542228%26vn%3D1', 's_dslv':'1498670542232','amznacsleftnav-ac35e287-d67e-4607-a950-5d9ffd0c2ca9':'1', 'x-amz-captcha-1':'1499054178128406', 'x-amz-captcha-2':'f44Jo5PiWFZO/J2o05Otig==', 'session-token':'jmS4MZ+87cNOfytK07tpUCEGti+GXuHdZ0oZyPtYqY7t0jdykH+Ub7kXBm+uyaqfsw9okzU8c7KFuF577LQSOEOVzXGU6Ky1xqdZjaFUDfW6H5HbFByM0YxhwaB/i3TdgWzWRV7hvGo3qygmjkrIJ3ESRIOOM6YB4EJWL65CQUTq+Cp4ORjO1XQaGvfPERmPKJ8tKI4p77AQ0pKocXEOtyFku2Vp9HJzTUI9LN4bZVnXVtkV/ra/ElaVLqz1HqDJ', 'csm-hit':'s-GZBERSD0R10VXC0HBQZ6|1500714195597', 'session-id-time':'2082754801l', 'session-id':'261-2325209-6209161', 'ubid-acbde':'259-4651163-1859124' }
+                #req.cookies = {'lc-main':'en_US', 's_nr':'1503816974090-New', 's_vnum':'1935816974090%26vn%3D1', 's_dslv':'1503816974091', 'x-main':'pHlb3N0WUwENeYPsqI@jzfF7PXLCCMcJSFiGwcdKfrlzzhc8yQR4kOovInsAXJRe', 'at-main':'Atza|IwEBIF45RJQgsZLrUGO7JaJnp1uVC-RDIfDCqwjV0PeKEDcSIP7e0Pvcm_n-R4iCtwyo7zXH7KLDakbXVsW-9UevBLsZEeSIH2YZJFCjQqDsNAySplN1BcQ1tUj5kmj24vddIVYyi7vx3S0B-tkr9EISA5O5_d5Tr--5JO2qiruKCKawd1MLIyk8KFGS2KdQJGW9wwb9fJf6C7Fk4_7UiW5C3D1DLeuP3VXdar3-_S3yvGXRindK-xRNl3O_YFLRo-a_yn9_Z1V8vNj6kvWgzui_fOIRGrsI9qCHAJpcpt5Nh4Ta5n6-ALqNPkS-zbWlmMkZMgWsZb5EwLk8qr5O_FUA9Be8bqkneub7AuYy2QcvE01rYqkAKgAm4QKR5MSCXDQg8Fquyibqt_a3TRBYXTOzPnoedkm7JdBsUtVGYs4TBNssF4KGFefA1cQRLvxAhHfZe58', 'x-wl-uid':'1QBgT0TBwoj9RQ+QP7eh8ocBTABgs1739+rzq1e3s1iwjoSRYnMpbAczaaknzT2id2ww9iSyiyXd3OQeaJ9Nm9xZrZOKqXNWIDJihS4V7CV+xlp+PQA7T/ILJyNBZ15so9XvNPTzCBQA=', 'session-token':'qLl3vjnjOse5+Cy5cC+3OlMT95d5wVC4bWvaoAbqyhOetjeYqWP24HhMNHJI9Ni3Y7rljL1VdkRzXeolkaGJX8cPCh2P8OzRCIL3t4dynzdXlADAwNZxyWK1BFxTvyUzw4CXSHIeNdq1l95h3SbsLhG4gOhSf5JLHUzfx9dKziC4SpGUaTP+/8VbIE886Ipz6wOjM1J1YwP4lwLQABPJPh/qNzYZWgWTmLW2sk2bkN1nGCJk9XWAoIA2ClwvqPRRIFg8mbX73GFXkSCPmdboKQ==', 'csm-hit':'HCCNKDAR5Q931G1FR5S1+s-HCCNKDAR5Q931G1FR5S1|1504589304054', 'ubid-main':'151-8001146-5395566', 'session-id-time':'2082787201l', 'session-id':'151-4943311-4733238'}
+                #req.cookies = {'s_nr':'1514464459649-Repeat', 's_vnum':'1935816974090%26vn%3D2', 's_dslv':'1514464459650', 'amznacsleftnav-74393fbe-66a6-3a52-840b-37b54d8c76ce':'1', 'ubid-main':'151-8001146-5395566', 'session-id':'143-2570392-1761151', 'session-id-time':'2082787201l', 'x-amz-captcha-1':'1518087751656922', 'x-amz-captcha-2':'TAtOiFxNP39/4JXr1HRtRQ==', 'sst-main':'Sst1|PQEIWOSKQkmRJNiLdAIpYuxvCAgSf8fU0zrPqIDU7VYVKFCOVnWBgJtiBpdxZRVT3-poc3ti0PuawPx6vNYyBVldZhbnizavxNe9Bk4hO_sfGatBlE4qbUfAffoSGZ6yY5qCSewJxENQdMoYJdd2iGeltGkf31I7IedHWFkRNqIMeLvDhOTN6hqKpQTN9hDBPQMu5cmGO5GyahsVZgdQHW7nBs2FLMophIEpjxCVzavMHwn4aHwIdloCWgkG6TfVmKcDiLUXWWoEXfBKp1QLdH2Mrg', 'x-wl-uid':'1yxWFE65rJfR+kOyS6k2hEnyGw4GjqsLYgzk8HpBprCTXNRb3M/MHB8cr9TuingY8KMY1MTFD/DRDFDi8l+aNIzcMf1WnUCGQpyuxT03VbXPERI+scQGnJsJeQnc9o4RlV2Ma6WJrdc4=', 'session-token':'rxLcGYC0NRCcoO4VkktmBsPxOQ9ijb7A7y+U04K11tUdm56q5+IfofrwXNkASd2VRmrzzjMAZYXSYCfNpYtun/TVNDL2W9szbccnXIwNl1WCwn0nSmKS252Ny1WqkdB0gWJem0QYwk9DIcz/Rm27nFidGDvO0QUKDRuqDXoXvxNDciWc86l/HX+vFS9RNG55PPuLoxeSz4isAn6TjnB+DLpNoO/6XZbi4IcZUvEonMZ6fnsL1Ut/RDk/6sxP5vOa', 'csm-hit':'1EK1B8SRZQ7J0XNH96X2+s-1EK1B8SRZQ7J0XNH96X2|1522756475463' }
+                if url[0] not in urls_done: 
+                    yield req
+                    #time.sleep(.1)
+            except: raise
+        #print "URLS_DONE : ",urls_done
+
+
+    def parse6(self,response):
+        categorylist=response.xpath('//*[@id="leftNav"]/ul[1]/ul/div/li/span/a')
+        categorylist1=response.xpath('//*[@id="leftNavContainer"]/ul[1]/ul/div/li/span/a')
+        if len(categorylist)>0:
+            for categories in categorylist:
+                #item=LowesItem()
+                #categoryurl="https://www.amazon.com" + categories.xpath('span/a/@href').extract()[0]
+                #categoryname= categories.xpath('span/a/span/text()').extract()[0]
+                categoryurl=categories.xpath('@href').extract()[0]
+                if categoryurl.find('http')==-1:
+                    categoryurl = 'https://www.amazon.com'+ categoryurl
+                categoryname=categories.xpath('span/text()').extract()[0]
+                req=scrapy.Request(categoryurl,callback=self.parse6, meta={'categoryname':categoryname})
+                req.meta['page_id']= response.meta['page_id']
+                #item['url']=categoryurl
+                #item['category'] =categoryname
+                #yield item
+                yield req
+        elif len(categorylist1)>0:
+            for categories in categorylist1:
+                #item=LowesItem()
+                #categoryurl="https://www.amazon.com" + categories.xpath('span/a/@href').extract()[0]
+                #categoryname= categories.xpath('span/a/span/text()').extract()[0]
+                categoryurl=categories.xpath('@href').extract()[0]
+                if categoryurl.find('http')==-1: categoryurl = 'https://www.amazon.com'+categoryurl
+                categoryname=categories.xpath('span/text()').extract()[0]
+                req=scrapy.Request(categoryurl,callback=self.parse6, meta={'categoryname':categoryname})
+                req.meta['page_id']= response.meta['page_id']
+                #item['url']=categoryurl
+                #item['category'] =categoryname
+                #yield item
+                yield req
+        else:
+            item=AmazonItem()
+            #categoryname=response.xpath('//*[@id="mainContent"]/div[3]/h1/text()').extract()[0]
+            categoryname="".join(response.xpath('//*[@id="fst-hybrid-dynamic-h1"]/div/h1//text()').extract())
+            if not categoryname: categoryname="".join(response.xpath('//*[@id="leftNavContainer"]/ul[1]/li/span/h4//text()').extract())
+            categoryurl=response.url
+            item['url']=categoryurl
+            item['category'] =categoryname
+            item['id'] = response.meta['page_id']
+            count="".join(response.xpath('//*[@id="s-result-count"]/text()').extract())
+            breadcrumb="".join(response.xpath('//*[@id="s-result-count"]/span//text()').extract())
+            item['product_count']=count
+            item['breadcrumb']=breadcrumb
+            yield item
